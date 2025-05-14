@@ -1,2 +1,2 @@
 # Morphological analysis project
-This project covers practical realisation of my diploma of bachelor's degree in applied mathematics. It represents a universal tool for morphological analysis of words in given text which could be used by Russian-speaking students or enthusiasts who aim to learn English language.
+This project is the practical realization of my bachelor's diploma in applied mathematics. It is a universal tool for the morphological analysis of words in a given text that can be used by Russian-speaking students or enthusiasts who want to learn the English language.
