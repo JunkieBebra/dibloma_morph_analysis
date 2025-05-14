@@ -1,3 +1,7 @@
 from django.contrib import admin
+from .models import Text, TextSection, Dictionary, Word
 
-# Register your models here.
+admin.site.register(Text)
+admin.site.register(TextSection)
+admin.site.register(Dictionary)
+admin.site.register(Word)
