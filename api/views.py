@@ -10,7 +10,7 @@ from .permissions import IsOwnerOrAdmin
 from rest_framework.permissions import IsAuthenticated
 
 class TextViewSet(viewsets.ModelViewSet):
-    authentication_classes = [TokenAuthentication]  # Указываем аутентификацию по токену
+    authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
     queryset = Text.objects.all()
     serializer_class = TextSerializer
@@ -38,3 +38,31 @@ class TextViewSet(viewsets.ModelViewSet):
                 section_index=i,
                 content=section
             )
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        sections = instance.sections.order_by('section_index')
+        full_text = ''.join([section.content for section in sections])
+        data = self.get_serializer(instance).data
+        data['full_text'] = full_text
+        return Response(data)
+
+    @action(detail=True, methods=['get'], url_path='section/(?P<section_index>\\d+)')
+    def get_section(self, request, pk=None, section_index=None):
+        """
+        Получить конкретную секцию текста по номеру.
+        """
+        try:
+            section = TextSection.objects.get(text_id=pk, section_index=section_index)
+            return Response({'section_index': section.section_index, 'content': section.content})
+        except TextSection.DoesNotExist:
+            return Response({'error': 'Секция не найдена.'}, status=status.HTTP_404_NOT_FOUND)
+
+    @action(detail=True, methods=['get'], url_path='whole')
+    def get_full_text(self, request, pk=None):
+        """
+        Получить весь текст, собранный из всех секций.
+        """
+        sections = TextSection.objects.filter(text_id=pk).order_by('section_index')
+        full_text = ''.join([section.content for section in sections])
+        return Response({'full_text': full_text})
