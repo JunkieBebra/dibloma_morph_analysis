@@ -1,6 +1,7 @@
 from api.models import TextSection, Word, WordAnalysis
 from morphology_analysis.analyzer import analyze_text
 from django.db import transaction
+from morphology_analysis.translation import get_translations
 
 @transaction.atomic
 def analyze_section(section: TextSection):
@@ -17,15 +18,15 @@ def analyze_section(section: TextSection):
         pos = word_info["pos"]
         morph = word_info["morph"]
 
-        # 1. Попробуем найти уже разобранное слово
         word = Word.objects.filter(value=value).first()
 
         if word:
-            # 2. Уже есть — добавим секцию, если не связано
             word.section.add(section)
         else:
-            # 3. Создаём новое слово и разбор
-            word = Word.objects.create(value=value)
+            word = Word.objects.create(
+                value=value,
+                translation_value=get_translations(lemma)
+            )
             word.section.add(section)
 
             WordAnalysis.objects.create(
