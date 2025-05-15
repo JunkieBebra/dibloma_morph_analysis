@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+import uuid
 
 User = get_user_model()
 
@@ -58,5 +59,18 @@ class Dictionary(models.Model):
 class Word(models.Model):
     id = models.AutoField(primary_key=True)
     value = models.CharField(max_length=255)
-    morph_analysis = models.JSONField()
-    translation_value = models.JSONField()
+    translation_value = models.JSONField(null=True, blank=True)
+    section = models.ManyToManyField(TextSection, related_name='words')
+
+    def __str__(self):
+        return f"{self.value}"
+    
+
+class WordAnalysis(models.Model):
+    word = models.ForeignKey(Word, on_delete=models.CASCADE, related_name='analysis')
+    lemma = models.CharField(max_length=255)
+    pos = models.CharField(max_length=50)
+    morph = models.JSONField()
+
+    def __str__ (self):
+        return f"{self.word.value} - {self.lemma} ({self.pos})"
