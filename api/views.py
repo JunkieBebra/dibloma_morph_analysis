@@ -4,13 +4,14 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.generics import RetrieveAPIView
-from .models import Text, TextSection, Word
+from rest_framework.permissions import IsAuthenticated
+from .models import Text, TextSection, Word, Dictionary
 from .serializers import TextSerializer
 from utils.text_splitter import split_text_into_sections
 from .permissions import IsOwnerOrAdmin
 from rest_framework.permissions import IsAuthenticated
 from morphology_analysis.pipeline import analyze_section
-from api.serializers import WordSerializer, WordSummarySerializer
+from api.serializers import WordSerializer, DictionarySerializer
 
 
 class TextViewSet(viewsets.ModelViewSet):
@@ -136,3 +137,14 @@ class TextViewSet(viewsets.ModelViewSet):
 class WordDetailAPIView(RetrieveAPIView):
     queryset = Word.objects.prefetch_related('analysis')
     serializer_class = WordSerializer
+
+
+class DictionaryViewSet(viewsets.ModelViewSet):
+    serializer_class = DictionarySerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Dictionary.objects.filter(user=self.request.user, )
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
