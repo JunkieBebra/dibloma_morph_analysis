@@ -1,6 +1,8 @@
 from rest_framework import serializers
-from .models import Text, WordAnalysis, Word, Dictionary
+from .models import Text, WordAnalysis, Word, Dictionary, DictionaryEntry
 from morphology_analysis.morph_utils import translate_pos, translate_morph
+from rest_framework import serializers
+
 
 class TextSerializer(serializers.ModelSerializer):
     class Meta:
@@ -45,10 +47,17 @@ class WordSummarySerializer(serializers.ModelSerializer):
 
 class DictionarySerializer(serializers.ModelSerializer):
     word = WordSerializer(read_only=True)
-    word_id = serializers.PrimaryKeyRelatedField(
-        queryset=Word.objects.all(), write_only=True, source='word'
-    )
 
     class Meta:
         model = Dictionary
-        fields = ['id', 'word', 'word_id', 'added_at']
+        fields = ['id', 'word', 'created_at']
+
+
+class DictionaryEntrySerializer(serializers.ModelSerializer):
+    word = WordSerializer(read_only=True)
+    word_id = serializers.PrimaryKeyRelatedField(queryset=Word.objects.all(), write_only=True, source='word')
+    dictionary_id = serializers.IntegerField(write_only=True)
+
+    class Meta:
+        model = DictionaryEntry
+        fields = ['id', 'dictionary_id', 'word', 'word_id', 'added_at']

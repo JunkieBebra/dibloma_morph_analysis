@@ -1,10 +1,12 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import TextViewSet, WordDetailAPIView
+from .views import TextViewSet, WordDetailAPIView, DictionaryViewSet, DictionaryEntryViewSet
 from .views_auth import RegisterView, LoginView, LogoutView
 
 router = DefaultRouter()
 router.register(r'texts', TextViewSet, basename='text')
+router.register(r'dictionaries', DictionaryViewSet, basename='dictionary')
+router.register(r'dictionaries-entry', DictionaryEntryViewSet, basename='dictionary-entry')
 
 
 urlpatterns = [

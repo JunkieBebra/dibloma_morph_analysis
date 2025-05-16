@@ -48,12 +48,24 @@ class Dictionary(models.Model):
     id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=255)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='dictionaries')
-    words = models.ManyToManyField('Word', related_name='dictionaries')
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='closed')
+    words = models.ManyToManyField('Word', through='DictionaryEntry', related_name='dictionaries')
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.title} ({self.user.username})"
+    
+    
+class DictionaryEntry(models.Model):
+    dictionary = models.ForeignKey('Dictionary', on_delete=models.CASCADE, related_name='entries')
+    word = models.ForeignKey('Word', on_delete=models.CASCADE)
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ['dictionary', 'word']
+
+    def __str__(self):
+        return f"{self.dictionary.title} — {self.word.value}"
     
 
 class Word(models.Model):

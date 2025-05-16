@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: DejaVu Sans, sans-serif; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        th, td { border: 1px solid #333; padding: 6px; text-align: left; }
+        th { background: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h2>Словарь: {{ dictionary.title }}</h2>
+    <p>Пользователь: {{ dictionary.user.username }}</p>
+    <p>Дата: {{ date }}</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Слово</th>
+                <th>Перевод</th>
+                <th>Лемма</th>
+                <th>Часть речи</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in entries %}
+            <tr>
+                <td>{{ entry.word.value }}</td>
+                <td>{{ entry.word.translation_value|join:", " }}</td>
+                {% for analysis in entry.word.analysis.all %}
+                    <td>{{ analysis.lemma }}</td>
+                    <td>{{ analysis.pos }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
